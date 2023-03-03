@@ -2,6 +2,8 @@ package Main;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-    }
+    Ihm ihm = new Ihm();
+    Controleur controleur=new Controleur(ihm);
+    controleur.jouer();
+}
 }
