@@ -110,10 +110,10 @@ public class Damier {
         String color = currentJoueur;
         String counterColor;
         if( color.equals("\\u26AA")){
-             counterColor = "\\u26AB";
+            counterColor = "\\u26AB";
         }
         else{
-             counterColor = "\\u26AA";
+            counterColor = "\\u26AA";
         }
         if( !plateau[colonne][ligne].equals("\\u26AA") && !plateau[colonne][ligne].equals("\\u26AB")){
             if( colonne+1<= (this.plateau.length-1)  && this.plateau[colonne+1][ligne].equals(counterColor) ){
