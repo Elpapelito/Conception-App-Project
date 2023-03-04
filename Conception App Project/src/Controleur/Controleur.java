@@ -29,7 +29,6 @@ public class Controleur {
 
         String jeu = "0";
         while (!jeu.equals("1")){
-            ihm.affiche("coucou");
             jeu = ihm.saisieString(message);
             message = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
                     "_______________________________________\n" +

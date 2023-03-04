@@ -1,10 +1,10 @@
 package othello.modele;
 
-public class Joueur {
+public class JoueurOthello {
     private String nom;
     private int nb_partie_gagnee=0;
 
-    public Joueur(String nom){
+    public JoueurOthello(String nom){
         this.nom = nom;
     }
 

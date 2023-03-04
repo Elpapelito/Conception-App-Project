@@ -1,13 +1,13 @@
 package othello.modele;
 
-public class Damier3 {
+public class Damier3Othello {
     /* pion_blanc = 1 pion_noir = -1 vide = 0 */
     private int[][] lesCases;
     private int nb_pions_blanc = 2;
     private int nb_pions_noir = 2;
 
     int joueur_courant = -1;
-    public Damier3(){
+    public Damier3Othello(){
         lesCases = new int[8][8];
     }
 

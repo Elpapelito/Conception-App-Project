@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Damier {
+public class DamierOthello {
     private String[][] lesCases;
     private int pions_blancs = 2;
     private int pions_noirs = 2;
 
-    public Damier(){
+    public DamierOthello(){
         lesCases = new String[8][8];
     }
     public void initialise(){

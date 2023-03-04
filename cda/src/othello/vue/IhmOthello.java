@@ -2,7 +2,7 @@ package othello.vue;
 
 import java.util.Scanner;
 
-public class Ihm {
+public class IhmOthello {
     Scanner sc = new Scanner(System.in);
     public String demander_nom(String joueur){
         System.out.print("Entrez le nom du " + joueur + " : ");

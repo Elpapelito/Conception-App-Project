@@ -1,9 +1,10 @@
-package Systeme;
+package Systeme.vue;
 
 import java.util.Scanner;
 
 public class Ihm {
     Scanner sc = new Scanner(System.in);
+    
     public String demander(){
         String reponse = sc.next();
         return reponse;

@@ -1,7 +1,5 @@
-import Systeme.Controleur;
-import Systeme.Ihm;
-
-import java.util.Scanner;
+import Systeme.controleur.Controleur;
+import Systeme.vue.Ihm;
 
 public class Main {
 
