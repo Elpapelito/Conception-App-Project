@@ -2,6 +2,7 @@ package Systeme.modele;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Damier {
     /* pion_blanc = 1 pion_noir = -1 vide = 0 */
@@ -88,7 +89,9 @@ public class Damier {
         int l = a + x;
         int c = b + y;
         while (lesCases[l][c] != joueur_courant) {
+            System.out.println(l +" " + c +" "+"et c un"+ lesCases[l][c] );
             lesCases[l][c] = joueur_courant;
+            System.out.println(l +" " + c +" "+"et c un"+ lesCases[l][c] );
             if (joueur_courant == 1) {
                 nb_pions_noir--;
                 nb_pions_blanc++;

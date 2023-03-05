@@ -19,12 +19,12 @@ public class Controleur {
     public void jouer() {
         int i = 0;
         for (Jeu j : lesJeux)
-            ihm.saisir(++i + " : " + j.getNom() + "\n");
+            ihm.afficher(++i + " : " + j.getNom() + "\n");
 
-        ihm.saisir("Saisir le numéro de jeu : ");
+        ihm.afficher("Saisir le numéro de jeu : ");
         String n = ihm.demander();
         while (Integer.valueOf(n) < 1 || Integer.valueOf(n) > lesJeux.size()) {
-            ihm.saisir("Numéro non valide, en saisir un valide : \n");
+            ihm.afficher("Numéro non valide, en saisir un valide : ");
             n = ihm.demander();
         }
         // tester n : tant que n n'est pas un chiffre compris entre 0 et jeu.length, on
