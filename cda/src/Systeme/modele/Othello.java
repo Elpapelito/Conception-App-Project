@@ -2,9 +2,6 @@ package Systeme.modele;
 
 import Systeme.vue.Ihm;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Othello implements Jeu {
     private Ihm ihm;
     private Damier damier;
@@ -17,11 +14,11 @@ public class Othello implements Jeu {
     @Override
     public void jouer() {
         //enregistrement des joueurs
-        ihm.afficher("Entrer un nom : ");
+        ihm.saisir("Entrer un nom : ");
         String nom1 = ihm.demander();
         joueur1 = new Joueur(nom1);
 
-        ihm.afficher("Entrer un nom : ");
+        ihm.saisir("Entrer un nom : ");
         String nom2 = ihm.demander();
         joueur2 = new Joueur(nom2);
 
@@ -30,7 +27,7 @@ public class Othello implements Jeu {
         do {
             commencer_partie();
             do{
-                ihm.afficher("Voulez-vous rejouer une autre partie? O/N : ");
+                ihm.saisir("Voulez-vous rejouer une autre partie? O/N : ");
                 rejouer=ihm.demander();
             }
             while(!rejouer.equals("O") && !rejouer.equals("N"));
@@ -40,7 +37,8 @@ public class Othello implements Jeu {
 
         int score1=joueur1.getNb_partie_gagnee();
         int score2=joueur2.getNb_partie_gagnee();
-        ihm.afficher("A bientôt!");
+        ihm.saisir(joueur1.getNom()+" : "+score1+"\n");
+        ihm.saisir(joueur2.getNom()+" : "+score2);
 
     }
 
@@ -50,9 +48,9 @@ public class Othello implements Jeu {
         do{
             //affichage de l'état du damier à chaque tour
             damier.changer_joueur_courant();
-            ihm.afficher(damier.toString());
-            ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
-            ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
+            ihm.saisir(damier.toString());
+            ihm.saisir(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
+            ihm.saisir(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
             joueur=(damier.getJoueur_courant()==1)?joueur2.getNom():joueur1.getNom();
 
             //demander le coup et verifier si c'est valide
@@ -61,14 +59,14 @@ public class Othello implements Jeu {
             do {
                 valid=false;
                 try{
-                    ihm.afficher(joueur + ", c'est à vous de jouer." +
+                    ihm.saisir(joueur + ", c'est à vous de jouer." +
                             " Saisir une ligne entre 1 et 8 suivie d'une lettre entre A et H (ex : 3 D) : ");
                     coup = ihm.demander();
                     if(coup.equals("P")) break;
                     damier.tester_coup(coup);
                 }
                 catch(Exception e){
-                    ihm.afficher(e.getMessage());
+                    ihm.saisir(e.getMessage());
                     valid = true;
                 }
             }
@@ -78,9 +76,9 @@ public class Othello implements Jeu {
         while (!damier.game_over());
 
         //afficher le dernier état du damier
-        ihm.afficher(damier.toString());
-        ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
-        ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
+        ihm.saisir(damier.toString());
+        ihm.saisir(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
+        ihm.saisir(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
 
         //calcul le vainqueur
         String resultat;
@@ -94,7 +92,7 @@ public class Othello implements Jeu {
         else {
             resultat=joueur2.getNom(); joueur2.incremente();
         }
-        ihm.afficher("La partie est finie.\n Le vainquer de cette partie est : " + resultat);
+        ihm.saisir("La partie est finie.\n Le vainquer de cette partie est : " + resultat);
 
 
     }

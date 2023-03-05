@@ -9,7 +9,7 @@ public class Ihm {
         return reponse;
     }
 
-    public void afficher(String message){
+    public void saisir(String message){
         System.out.print(message);
     }
 }
