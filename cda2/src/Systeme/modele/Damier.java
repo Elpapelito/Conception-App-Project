@@ -63,6 +63,8 @@ public class Damier {
                 if(i == 0 && j == 0) continue;
                 if(encadrement_valide(x,y,i,j)){
                     lesCases[x][y]=joueur_courant;
+                    if (joueur_courant==-1) {nb_pions_noir++;}
+                    else{nb_pions_blanc++;}
                     retourner_pions(x,y,i,j);
                     b=true;
                 }
