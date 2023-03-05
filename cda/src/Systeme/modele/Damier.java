@@ -59,13 +59,21 @@ public class Damier {
 
     public boolean coup_valide(int x, int y) {
         boolean b=false;
+        boolean pionsPosé = false;
         for(int i=-1; i<=1; i++)
             for(int j=-1; j<=1; j++) {
                 if(i == 0 && j == 0) continue;
-                if(encadrement_valide(x,y,i,j)){
-                    lesCases[x][y]=joueur_courant;
-                    if (joueur_courant==-1) {nb_pions_noir++;}
-                    else{nb_pions_blanc++;}
+                if(encadrement_valide(x,y,i,j)) {
+                    lesCases[x][y] = joueur_courant;
+                    if (!pionsPosé)
+                    {
+                        if (joueur_courant == -1 ) {
+                            nb_pions_noir++;
+                        } else {
+                            nb_pions_blanc++;
+                        }
+                    pionsPosé = true;
+                    }
                     retourner_pions(x,y,i,j);
                     b=true;
                 }
@@ -89,9 +97,12 @@ public class Damier {
         int l = a + x;
         int c = b + y;
         while (lesCases[l][c] != joueur_courant) {
+            System.out.println("On retourne un pions et nb pion de "+joueur_courant);
             System.out.println(l +" " + c +" "+"et c un"+ lesCases[l][c] );
+            System.out.println("Pions noirs : "+ nb_pions_noir);
+            System.out.println("Pions blancs : "+ nb_pions_blanc);
             lesCases[l][c] = joueur_courant;
-            System.out.println(l +" " + c +" "+"et c un"+ lesCases[l][c] );
+            
             if (joueur_courant == 1) {
                 nb_pions_noir--;
                 nb_pions_blanc++;
