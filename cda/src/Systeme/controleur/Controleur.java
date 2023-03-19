@@ -18,12 +18,12 @@ public class Controleur {
     // lancer le systeme
     public void jouer() {
         int i = 0;
-        for (Jeu j : lesJeux)
+        /*for (Jeu j : lesJeux)
             ihm.afficher(++i + " : " + j.getNom() + "\n");
 
         ihm.afficher("Saisir le numéro de jeu : ");
         String n = ihm.demander();
-        while (Integer.valueOf(n) < 1 || Integer.valueOf(n) > lesJeux.size()) {
+        while (!n.matches("[+-]?\\d*(\\.\\d+)?") || Integer.valueOf(n)<1 || Integer.valueOf(n)> lesJeux.size() ) {
             ihm.afficher("Numéro non valide, en saisir un valide : ");
             n = ihm.demander();
         }
@@ -34,8 +34,8 @@ public class Controleur {
         // - 1
 
         int p = Integer.valueOf(n) - 1;
-        Jeu jeuChoisi = lesJeux.get(p);
-        jeuChoisi.jouer();
+        Jeu jeuChoisi = lesJeux.get(p);*/
+        new Othello(ihm).jouer();
     }
 
     // ajouter de quoi changer de jeu ou fermer le selectionneur de jeux

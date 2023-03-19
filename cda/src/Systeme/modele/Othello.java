@@ -2,6 +2,8 @@ package Systeme.modele;
 
 import Systeme.vue.Ihm;
 
+import java.util.List;
+
 public class Othello implements Jeu {
     private Ihm ihm;
     private Damier damier;
@@ -13,119 +15,73 @@ public class Othello implements Jeu {
 
     @Override
     public void jouer() {
-        //enregistrement des joueurs
-        String message =  "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-                "_______________________________________\n" +
-                "|      Joueur 1 veuillez choisir      |\n" +
-                "|             votre nom :             |\n" +
-                "|    (Vos pions seront les Noirs )    |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|_____________________________________|\n" +
-                "Reponse : ";
-        ihm.afficher(message);
+        joueur1 = new Joueur(ihm.demanderNomJoueur(1));
+        joueur2 = new Joueur(ihm.demanderNomJoueur(2));
 
-        
-        String name = ihm.demander();
-        joueur1 = new Joueur(name);
-
-        message =  "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-                "_______________________________________\n" +
-                "|      Joueur 2 veuillez choisir      |\n" +
-                "|             votre nom :             |\n" +
-                "|    (Vos pions seront les Blancs )   |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|_____________________________________|\n" +
-                "Reponse : ";
-        ihm.afficher(message);
-        name = ihm.demander();
-        joueur2 = new Joueur(name);
-
-        //lancer une partie
         String rejouer;
         do {
-            commencer_partie();
-            do{
-                message = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-                "_______________________________________\n" +
-                "|         Voulez-vous rejouer         |\n" +
-                "|        une autre partie? O/N :      |\n" +
-                "|_____________________________________|\n" +
-                "Reponse : ";
-                ihm.afficher(message);
-                rejouer=ihm.demander();
+            commencerPartie();
+            rejouer= ihm.demanderRejouer();
             }
-            while(!rejouer.equals("O") && !rejouer.equals("N"));
-        }
         while(rejouer.equals("O"));
-
-
-        int score1=joueur1.getNb_partie_gagnee();
-        int score2=joueur2.getNb_partie_gagnee();
-        ihm.afficher(joueur1.getNom()+" : "+score1+"\n");
-        ihm.afficher(joueur2.getNom()+" : "+score2);
-
+        ihm.afficherScore(joueur1);
+        ihm.afficherScore(joueur2);
     }
 
-    public void commencer_partie(){
-        damier = new Damier();
-        String joueur;
-        do{
-            //affichage de l'état du damier à chaque tour
-            damier.changer_joueur_courant();
-            ihm.afficher(damier.toString());
-            ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
-            ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
-            joueur=(damier.getJoueur_courant()==1)?joueur2.getNom():joueur1.getNom();
+    public void gameOver() throws Exception {
+        String joueur = (damier.getJoueurCourant() == 1) ? joueur2.getNom() : joueur1.getNom();
+        if(damier.coupPossible().isEmpty()) {
+            ihm.afficherEtatDamier(damier,joueur1,joueur2);
+            ihm.demanderPasse(joueur);
+            damier.changerJoueurCourant();
+            if (damier.coupPossible().isEmpty()) throw new Exception("La partie est finie.");
+        }
+    }
 
-            //demander le coup et verifier si c'est valide
-            String coup;
-            boolean valid;
-            do {
-                valid=false;
-                try{
-                    ihm.afficher(joueur + ", c'est à vous de jouer." +
-                            " Saisir une ligne entre 1 et 8 suivie d'une lettre entre A et H (ex : 3 D) : ");
-                    coup = ihm.demander();
-                    if(coup.equals("P")) break;
-                    damier.tester_coup(coup);
-                }
-                catch(Exception e){
-                    ihm.afficher(e.getMessage());
-                    valid = true;
-                }
+    public String getJCourant(){
+        return (damier.getJoueurCourant() == 1) ? joueur2.getNom() : joueur1.getNom();
+    }
+    public void mettrePion(){
+        String coup;
+        do {
+            try {
+                coup = ihm.demanderCoup(getJCourant());
+                damier.testerCoup(coup);
+                break;
+            } catch (Exception e) {
+                ihm.afficherErreur(e);
             }
-            while (valid);
-
         }
-        while (!damier.game_over());
-
-        //afficher le dernier état du damier
-        ihm.afficher(damier.toString());
-        ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
-        ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
-
-        //calcul le vainqueur
-        String resultat;
-
-        if(damier.vainqueur()==0) {
-            resultat = "ex aequo"; joueur1.incremente();joueur2.incremente();
-        }
-        else if(damier.vainqueur()>0) {
-            resultat = joueur1.getNom(); joueur1.incremente();
-        }
-        else {
-            resultat=joueur2.getNom(); joueur2.incremente();
-        }
-        ihm.afficher("La partie est finie.\n Le vainquer de cette partie est : " + resultat);
-
-
+        while(true);
     }
 
-    //optionnel
+    public void commencerPartie() {
+        damier = new Damier(4);
+        damier.initialiserDamierOthello();
+        do {
+            try{
+                damier.changerJoueurCourant();
+                gameOver();
+                ihm.afficherEtatDamier(damier, joueur1, joueur2);
+                System.out.println(damier.coupPossible());
+                mettrePion();
+            }
+            catch(Exception e){
+                ihm.afficherErreur(e);break;
+            }
+        }
+        while (true);
+        resultat();
+    }
+
+    public void resultat(){
+        String gagnant;
+        if(damier.vainqueur()==0) {gagnant="ex aequo"; joueur1.incremente();joueur2.incremente();}
+        else if(damier.vainqueur()>0) {gagnant = joueur1.getNom(); joueur1.incremente();}
+        else {gagnant=joueur2.getNom(); joueur2.incremente();}
+        ihm.afficherVainqueur(gagnant);
+    }
+
         @Override
         public String getNom () {
             return "othello";

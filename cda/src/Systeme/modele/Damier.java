@@ -1,140 +1,163 @@
 package Systeme.modele;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Damier {
     /* pion_blanc = 1 pion_noir = -1 vide = 0 */
     private int[][] lesCases;
+    private int taille;
+    private int nbPionsBlanc = 2;
+    private int nbPionsNoir = 2;
+    private int joueurCourant = 1;
 
-    //nb pions sur le damier
-    private int nb_pions_blanc = 2;
-    private int nb_pions_noir = 2;
-    private int joueur_courant = 1;
-
-    public String nb_pions_blanc() {return String.valueOf(nb_pions_blanc);}
-    public int getJoueur_courant() {return joueur_courant;}
-    public String nb_pions_noir() {return String.valueOf(nb_pions_noir);}
-    public Damier(){
-        lesCases = new int[8][8];
-        for(int i=0; i<8; i++)
-            for(int j=0;j<8;j++)
-                lesCases[i][j]=0;
-
-        lesCases[3][3] = 1;
-        lesCases[3][4] = -1;
-        lesCases[4][3] = -1;
-        lesCases[4][4] = 1;
+    //-----------------GETTERS-----------------------------
+    public int nbPionsBlanc() {
+        return nbPionsBlanc;
     }
 
-    //changer le joueur à chaque tour
-    public void changer_joueur_courant(){
-        joueur_courant= (joueur_courant == -1) ? 1 : -1;
+    public int getJoueurCourant() {
+        return joueurCourant;
     }
 
-    //tester si un coup est valide
-    public void tester_coup(String coup) throws Exception {
-        if (!syntaxe_valide(coup)) throw new Exception("Syntaxe invalide!\n");
-
-        Map<Character, Integer> colonne = new HashMap<>();
-        colonne.put('A', 0);colonne.put('B', 1);
-        colonne.put('C', 2);colonne.put('D', 3);
-        colonne.put('E', 4);colonne.put('F', 5);
-        colonne.put('G', 6);colonne.put('H', 7);
-        String a = coup.substring(0, 1);
-        char b = coup.charAt(2);
-        int x = Integer.parseInt(a)-1;
-        int y = colonne.get(b);
-
-        if(!coup_valide(x,y)) throw new Exception("Coup invalide!\n");
+    public int nbPionsNoir() {
+        return nbPionsNoir;
     }
-    public boolean syntaxe_valide(String coup) {
-        if( coup.length() != 3) return false;
 
-        char a = coup.charAt(0); char b = coup.charAt(1); char c = coup.charAt(2);
-        if( a<'1' || a > '8' || b !=' ' || c <'A' || c > 'H') return false;
+//Contructeur d'un damier vide
+    public Damier(int taille) {
+        lesCases = new int[taille][taille];
+        for (int i = taille; i < taille; i++)
+            for (int j = taille; j < taille; j++)
+                lesCases[i][j] = 0;
+
+        this.taille = lesCases.length;
+    }
+
+//initialisation d'un damier pour Othello
+    public void initialiserDamierOthello() {
+        if(lesCases.length %2!=0) throw new NotConformDamier("Le damier n'est pas conforme");
+
+        lesCases[(taille/2)-1][(taille/2)-1]=1;
+        lesCases[(taille/2)-1][(taille/2)]=-1;
+        lesCases[(taille/2)][(taille/2)-1]=-1;
+        lesCases[(taille/2)][(taille/2)]=1;
+    }
+
+//permuter le joueur courant
+    public void changerJoueurCourant() {
+        joueurCourant = (joueurCourant == -1) ? 1 : -1;
+    }
+
+//tester le coup
+    public void testerCoup(String coup) throws CoupInvalid {
+        if (!syntaxeValide(coup))
+            throw new CoupInvalid("Syntaxe invalide");
+
+        int x = Integer.parseInt(coup.substring(0,1))-1;
+        int y = coup.charAt(2)-65;
+
+        coupValide(x,y);
+    }
+
+    public boolean syntaxeValide(String coup) {
+        if (coup.length() != 3) return false;
+
+        int a = coup.charAt(0);
+        int b = coup.charAt(1);
+        int c = coup.charAt(2);
+        if (a < 49 || a > taille+49-1 || b != 32 || c < 65 || c > taille+65-1)
+            return false;
         return true;
     }
 
-    public boolean coup_valide(int x, int y) {
-        boolean b=false;
-        boolean pionsPosé = false;
-        for(int i=-1; i<=1; i++)
-            for(int j=-1; j<=1; j++) {
-                if(i == 0 && j == 0) continue;
-                if(encadrement_valide(x,y,i,j)) {
-                    lesCases[x][y] = joueur_courant;
-                    if (!pionsPosé)
-                    {
-                        if (joueur_courant == -1 ) {
-                            nb_pions_noir++;
+    public void coupValide(int x, int y) throws CoupInvalid {
+        if(lesCases[x][y]!=0) throw new CoupInvalid("La case contient déjà un pion");
+        boolean pionsPose = false;
+
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0)
+                    continue;
+
+                if (encadrementValide(x, y, i, j)) {
+                    lesCases[x][y] = joueurCourant;
+                    if (!pionsPose) {
+                        if (joueurCourant == -1) {
+                            nbPionsNoir++;
                         } else {
-                            nb_pions_blanc++;
+                            nbPionsBlanc++;
                         }
-                    pionsPosé = true;
+                        pionsPose = true;
                     }
-                    retourner_pions(x,y,i,j);
-                    b=true;
+                    retournerPions(x, y, i, j);
                 }
             }
-        return b;
+        if (!pionsPose) throw new CoupInvalid("Il faut que votre pion encadre au moins un pion adverse.");
     }
-    public boolean encadrement_valide(int x,int y,int a,int b){
+
+    public boolean encadrementValide(int x, int y, int a, int b) {
         int l = a + x;
         int c = b + y;
-        int nb_pions_adverse = 0;
+        int nbPionsAdverse = 0;
 
-        while (l >= 0 && l < 8 && c >= 0 && c < 8) {
-            if (lesCases[l][c] == 0) return false;
-            if (lesCases[l][c]==joueur_courant) return nb_pions_adverse > 0;
-            nb_pions_adverse++; l += a; c += b;
+        while (l >= 0 && l <taille && c >= 0 && c < taille) {
+            if (lesCases[l][c] == 0)
+                return false;
+            if (lesCases[l][c] == joueurCourant)
+                return nbPionsAdverse > 0;
+            nbPionsAdverse++;
+            l += a;
+            c += b;
         }
         return false;
     }
 
-    public void retourner_pions(int x, int y,int a,int b){
+    public void retournerPions(int x, int y, int a, int b) {
         int l = a + x;
         int c = b + y;
-        while (lesCases[l][c] != joueur_courant) {
-            System.out.println("On retourne un pions et nb pion de "+joueur_courant);
-            System.out.println(l +" " + c +" "+"et c un"+ lesCases[l][c] );
-            System.out.println("Pions noirs : "+ nb_pions_noir);
-            System.out.println("Pions blancs : "+ nb_pions_blanc);
-            lesCases[l][c] = joueur_courant;
-            
-            if (joueur_courant == 1) {
-                nb_pions_noir--;
-                nb_pions_blanc++;
+        while (lesCases[l][c] != joueurCourant) {
+            lesCases[l][c] = joueurCourant;
+
+            if (joueurCourant == 1) {
+                nbPionsNoir--;
+                nbPionsBlanc++;
             } else {
-                nb_pions_noir++;
-                nb_pions_blanc--;
+                nbPionsNoir++;
+                nbPionsBlanc--;
             }
             l += a;
             c += b;
         }
     }
 
-    //tester si la partie est finie
-    public boolean game_over() {
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++) {
-                if (lesCases[i][j] != 0) continue;
-
+    public List<String> coupPossible() {
+        List<String> coupP=new ArrayList<>();
+        for (int i = 0; i <taille; i++)
+            for (int j = 0; j <taille; j++) {
+                if (lesCases[i][j] != 0)
+                    continue;
                 for (int k = -1; k <= 1; k++)
                     for (int l = -1; l <= 1; l++) {
-                        if (k == 0 && l == 0) continue;
-                        if (encadrement_valide(i, j, k, l)) return false;
+                        if (k == 0 && l == 0)
+                            continue;
+                        if (encadrementValide(i, j, k, l)){
+                            String cp = i+1 + " " + String.valueOf(Character.toChars(j+65));
+                            coupP.add(cp);
+                        }
                     }
             }
-        return true;
+        return coupP;
     }
 
-    public String toString(){
-        String s="O|A|B|C|D|E|F|G|H|\n";
-        for(int i=0; i<8; i++) {
-            s+=i+1;
-            for (int j = 0; j < 8; j++)
+    public String toString() {
+        String s = "O";
+        for (int i = 65; i<taille+65; i++)
+            s+= "|"+ String.valueOf(Character.toChars(i)) +"|";
+        s+="\n";
+        for (int i = 0; i < taille; i++) {
+            s += i + 1;
+            for (int j = 0; j < taille; j++)
                 switch (lesCases[i][j]) {
                     case 0:
                         s += "\uD83D\uDFE9";
@@ -151,7 +174,7 @@ public class Damier {
         return s;
     }
 
-    public int vainqueur(){
-        return nb_pions_noir - nb_pions_blanc;
+    public int vainqueur() {
+        return nbPionsNoir - nbPionsBlanc;
     }
 }
