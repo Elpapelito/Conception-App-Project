@@ -23,7 +23,7 @@ public class Controleur {
 
         ihm.afficher("Saisir le numéro de jeu : ");
         String n = ihm.demander();
-        while (Integer.valueOf(n) < 1 || Integer.valueOf(n) > lesJeux.size()) {
+        while (!n.matches("[+-]?\\d*(\\.\\d+)?") || Integer.valueOf(n)<1 || Integer.valueOf(n)> lesJeux.size() ) {
             ihm.afficher("Numéro non valide, en saisir un valide : ");
             n = ihm.demander();
         }

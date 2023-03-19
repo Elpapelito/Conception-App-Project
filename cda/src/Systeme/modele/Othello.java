@@ -14,34 +14,41 @@ public class Othello implements Jeu {
     @Override
     public void jouer() {
         //enregistrement des joueurs
-        String message =  "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-                "_______________________________________\n" +
-                "|      Joueur 1 veuillez choisir      |\n" +
-                "|             votre nom :             |\n" +
-                "|    (Vos pions seront les Noirs )    |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|_____________________________________|\n" +
-                "Reponse : ";
-        ihm.afficher(message);
+        String name;
+        String message;
+        do {
+            message =
+                    "_______________________________________\n" +
+                            "|      Joueur 1 veuillez choisir      |\n" +
+                            "|             votre nom :             |\n" +
+                            "|    (Vos pions seront les Noirs )    |\n" +
+                            "|                                     |\n" +
+                            "|                                     |\n" +
+                            "|                                     |\n" +
+                            "|_____________________________________|\n" +
+                            "Reponse : ";
+            ihm.afficher(message);
+            name = ihm.demander();
+        }
+        while(!name.matches("^[a-zA-Z]*$"));
 
-        
-        String name = ihm.demander();
         joueur1 = new Joueur(name);
 
-        message =  "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-                "_______________________________________\n" +
-                "|      Joueur 2 veuillez choisir      |\n" +
-                "|             votre nom :             |\n" +
-                "|    (Vos pions seront les Blancs )   |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|                                     |\n" +
-                "|_____________________________________|\n" +
-                "Reponse : ";
-        ihm.afficher(message);
-        name = ihm.demander();
+        do {
+            message =
+                    "_______________________________________\n" +
+                            "|      Joueur 2 veuillez choisir      |\n" +
+                            "|             votre nom :             |\n" +
+                            "|    (Vos pions seront les Blancs )   |\n" +
+                            "|                                     |\n" +
+                            "|                                     |\n" +
+                            "|                                     |\n" +
+                            "|_____________________________________|\n" +
+                            "Reponse : ";
+            ihm.afficher(message);
+            name = ihm.demander();
+        }
+        while(!name.matches("^[a-zA-Z]*$"));
         joueur2 = new Joueur(name);
 
         //lancer une partie
@@ -49,7 +56,7 @@ public class Othello implements Jeu {
         do {
             commencer_partie();
             do{
-                message = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+                message =
                 "_______________________________________\n" +
                 "|         Voulez-vous rejouer         |\n" +
                 "|        une autre partie? O/N :      |\n" +
@@ -70,40 +77,55 @@ public class Othello implements Jeu {
 
     }
 
-    public void commencer_partie(){
+    public void commencer_partie() {
         damier = new Damier();
         String joueur;
-        do{
-            //affichage de l'état du damier à chaque tour
-            damier.changer_joueur_courant();
-            ihm.afficher(damier.toString());
-            ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
-            ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
-            joueur=(damier.getJoueur_courant()==1)?joueur2.getNom():joueur1.getNom();
+        String coup;
+        boolean over=false;
 
-            //demander le coup et verifier si c'est valide
-            String coup;
+        do {
+            damier.changer_joueur_courant();
+
+            if(!damier.poser_possible()){
+                if(over) break;
+                ihm.afficher(damier.toString());
+                ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions noirs.\n");
+                ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions blancs.\n");
+                joueur = (damier.getJoueur_courant() == 1) ? joueur2.getNom() : joueur1.getNom();
+                do {
+                    ihm.afficher(joueur + ", vous ne pouvez plus poser un coup. Pour passer, tapez P : ");
+                    coup = ihm.demander();
+                }
+                while(!coup.equals("P"));
+                over = true;
+                continue;
+            }
+            over = false;
+
+            //affichage de l'état du damier à chaque tour
+            ihm.afficher(damier.toString());
+            ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions noirs.\n");
+            ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions blancs.\n");
+            joueur = (damier.getJoueur_courant() == 1) ? joueur2.getNom() : joueur1.getNom();
+
+
             boolean valid;
             do {
-                valid=false;
-                try{
+                valid = false;
+                try {
                     ihm.afficher(joueur + ", c'est à vous de jouer." +
                             " Saisir une ligne entre 1 et 8 suivie d'une lettre entre A et H (ex : 3 D) : ");
                     coup = ihm.demander();
-                    if(coup.equals("P")) break;
                     damier.tester_coup(coup);
-                }
-                catch(Exception e){
+                } catch (Exception e) {
                     ihm.afficher(e.getMessage());
                     valid = true;
                 }
             }
             while (valid);
-
         }
-        while (!damier.game_over());
+        while (true);
 
-        //afficher le dernier état du damier
         ihm.afficher(damier.toString());
         ihm.afficher(joueur1.getNom() + " : " + damier.nb_pions_noir() + " pions.\n");
         ihm.afficher(joueur2.getNom() + " : " + damier.nb_pions_blanc() + " pions.\n");
